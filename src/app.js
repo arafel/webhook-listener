@@ -18,6 +18,7 @@ app.post("/:hook", async (req, res) => {
   if (!g_config) {
     console.log("No config!");
     res.sendStatus(500);
+    return;
   }
   if (!req.params.hook) {
     console.log("No hook.");
