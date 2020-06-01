@@ -4,9 +4,8 @@ const fs = require("fs");
 const https = require("https");
 const http = require("http");
 
-const app = require("./src/app")();
-
-const PORT = process.env.PORT || 8000;
+let config = loadConfig();
+const app = require("./src/app")(config);
 
 async function buildServer(app) {
   let server;
@@ -22,10 +21,15 @@ async function buildServer(app) {
   }
   return server;
 }
+
+function loadConfig() {
+  let config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+  return config;
+}
   
 async function run() {
   let server = await buildServer(app);
-  server.listen(PORT, async function() {
+  server.listen(config.app.port, async function() {
     let host = server.address().address;
     let port = server.address().port;
 
