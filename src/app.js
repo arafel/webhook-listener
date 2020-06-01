@@ -1,8 +1,7 @@
+const fs = require("fs");
+const { spawn } = require("child_process");
 const express = require("express");
 const bodyParser = require("body-parser");
-
-// TODO - have proper config stuff
-const VALID_TOKEN="abc123";
 
 let g_config;
 
@@ -15,14 +14,14 @@ app.get("/ping", (req, res) => {
   res.status(200).send("PONG");
 });
 
-app.post("/:hook", (req, res) => {
+app.post("/:hook", async (req, res) => {
   if (!g_config) {
     console.log("No config!");
-    res.status(500).end();
+    res.sendStatus(500);
   }
   if (!req.params.hook) {
     console.log("No hook.");
-    res.status(404).end();
+    res.sendStatus(404);
     return;
   }
 
@@ -33,13 +32,23 @@ app.post("/:hook", (req, res) => {
     return;
   }
 
-  console.log("Processing hook", hook)
   if (hook.command) {
-    console.log("Running", hook.command);
-    res.status(200).end();
+    try {
+      fs.statSync(hook.command);
+      const child = spawn(hook.command);
+      res.status(200);
+      child.stdout.on('end', () => res.end());
+      child.stdout.pipe(res);
+    } catch (err) {
+      if (err.code === "ENOENT") {
+        res.sendStatus(406);
+      } else {
+        console.error("Error", err);
+        res.sendStatus(500);
+      }
+    }
   } else {
-    console.log("Nothing to do, no command.");
-    res.status(200).end();
+    res.sendStatus(200);
   }
 });
 
