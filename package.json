@@ -4,9 +4,9 @@
   "description": "Listen for incoming POST webhooks and take an action on them.",
   "main": "index.js",
   "scripts": {
-    "serve": "node server.js",
-    "test": "jest",
-    "dev": "nodemon -w server.js -w src/ -w package.json -x 'npm run serve'",
+    "serve": "NODE_ENV=production nodemon -w server.js -w src/ -w package.json -x 'node server.js'",
+    "test": "NODE_ENV=test jest",
+    "dev": "nodemon -w server.js -w src/ -w package.json -x 'node server.js'",
     "testmon": "nodemon -w server.js -w src/ -w package.json -w tests/ -x 'npm run test'"
   },
   "repository": {
@@ -15,7 +15,6 @@
   },
   "keywords": [],
   "author": "Paul Walker",
-  "license": "ISC",
   "homepage": "https://bitbucket.org/arafel/webhook-listener#readme",
   "devDependencies": {
     "jest": "^26.0.1",
